@@ -12,7 +12,7 @@ import { Link, useLocation } from "react-router-dom";
 
 const defaultLinks = [
   { to: "/dashboard", label: "Dashboard", Icon: FaTachometerAlt },
-  { to: "/notices", label: "Notice Board", Icon: FaClipboardList },
+  { to: "/notice", label: "Notice Board", Icon: FaClipboardList },
   { to: "/qr", label: "QR Attendance", Icon: FaQrcode },
   { to: "/canteen", label: "Canteen", Icon: FaUtensils },
   { to: "/medical", label: "Medical Center", Icon: FaClinicMedical },

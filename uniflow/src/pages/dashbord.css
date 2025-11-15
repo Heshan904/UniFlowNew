@@ -1,7 +1,8 @@
 .dash {
     display: flex;
     flex-direction: row; /* allows items to wrap on smaller screens */
-    justify-content: center; /* center content horizontally */
+    justify-content: flex-start; /* keep sidebar anchored to the left */
+    align-items: flex-start;
     gap: 50px; /* spacing between items */
     width: 100%;
     box-sizing: border-box;

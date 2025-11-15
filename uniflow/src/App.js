@@ -4,8 +4,14 @@ import AuthCard from './components/AuthCard';
 import DashBord from './pages/DashBord';
 import DoctorMedicalPage from './pages/DoctorMedicalPage';
 import HostelNoticePage from './pages/HostelNoticePage';
+import NoticePage from './pages/NoticePage';
+import Canteen from './pages/Canteen';
+import Medical from './pages/Medical';
 import Qr from './pages/Qr';
 import StudentHostelView from './pages/StudentHostelView';
+import Hostal from './admins/Hostal';
+import AdminCanteen from './admins/Canteen';
+import AdminMedical from './admins/Medical';
 
 const getStoredValue = (key) => {
   if (typeof window === 'undefined') {
@@ -26,6 +32,15 @@ const getDefaultRoute = (role) => {
   }
   if (role === 'doctor') {
     return '/doctor';
+  }
+  if (role === 'hostal') {
+    return '/hostal';
+  }
+  if (role === 'canteen') {
+    return '/canteen-admin';
+  }
+  if (role === 'medical-admin') {
+    return '/medical-admin';
   }
   return '/dashboard';
 };
@@ -83,6 +98,9 @@ function App() {
       />
       <Route path="/" element={<Navigate to={defaultRoute} replace />} />
       <Route path="/dashboard" element={<DashBord />} />
+      <Route path="/notice" element={<NoticePage />} />
+      <Route path="/canteen" element={<Canteen />} />
+      <Route path="/medical" element={<Medical />} />
       <Route path="/student" element={<StudentHostelView />} />
       <Route path="/notices" element={<HostelNoticePage />} />
       <Route
@@ -100,6 +118,32 @@ function App() {
         element={
           role === 'doctor' ? (
             <DoctorMedicalPage />
+          ) : (
+            <Navigate to={defaultRoute} replace />
+          )
+        }
+      />
+      <Route
+        path="/hostal"
+        element={
+          role === 'hostal' ? <Hostal /> : <Navigate to={defaultRoute} replace />
+        }
+      />
+      <Route
+        path="/canteen-admin"
+        element={
+          role === 'canteen' ? (
+            <AdminCanteen />
+          ) : (
+            <Navigate to={defaultRoute} replace />
+          )
+        }
+      />
+      <Route
+        path="/medical-admin"
+        element={
+          role === 'medical-admin' ? (
+            <AdminMedical />
           ) : (
             <Navigate to={defaultRoute} replace />
           )

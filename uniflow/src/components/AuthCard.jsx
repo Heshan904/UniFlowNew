@@ -14,6 +14,12 @@ const WARDEN_EMAIL = "skavinda742@gmail.com";
 const WARDEN_PASSWORD = "shehan";
 const DOCTOR_EMAIL = "skavinda771@gmail.com";
 const DOCTOR_PASSWORD = "kavinda";
+const HOSTAL_EMAIL = "hostal@gmail.com";
+const HOSTAL_PASSWORD = "hostal";
+const CANTEEN_EMAIL = "canteen@gmail.com";
+const CANTEEN_PASSWORD = "canteen";
+const MEDICAL_EMAIL = "medical@gmail.com";
+const MEDICAL_PASSWORD = "medical";
 
 const formCopy = {
   login: {
@@ -77,14 +83,27 @@ function AuthCard({ onAuthSuccess }) {
     const { email, password } = loginValues;
     const isWarden = email === WARDEN_EMAIL && password === WARDEN_PASSWORD;
     const isDoctor = email === DOCTOR_EMAIL && password === DOCTOR_PASSWORD;
+    const isHostal = email === HOSTAL_EMAIL && password === HOSTAL_PASSWORD;
+    const isCanteen = email === CANTEEN_EMAIL && password === CANTEEN_PASSWORD;
+    const isMedical = email === MEDICAL_EMAIL && password === MEDICAL_PASSWORD;
 
     try {
       let fullName = "";
-      if (!isWarden && !isDoctor) {
+      if (!isWarden && !isDoctor && !isHostal && !isCanteen && !isMedical) {
         const userCredential = await signInWithEmailAndPassword(auth, email, password);
         fullName = userCredential.user?.displayName?.trim() || "";
       }
-      const role = isWarden ? "warden" : isDoctor ? "doctor" : "student";
+      const role = isWarden
+        ? "warden"
+        : isDoctor
+        ? "doctor"
+        : isHostal
+        ? "hostal"
+        : isCanteen
+        ? "canteen"
+        : isMedical
+        ? "medical-admin"
+        : "student";
       localStorage.setItem("isAuthenticated", "true");
       localStorage.setItem("email", email);
       localStorage.setItem("role", role);
@@ -96,10 +115,20 @@ function AuthCard({ onAuthSuccess }) {
       setFeedback("Login successful!");
       onAuthSuccess?.(role);
 
-      navigate(
-        role === "warden" ? "/warden" : role === "doctor" ? "/doctor" : "/dashboard",
-        { replace: true },
-      );
+      let destination = "/dashboard";
+      if (role === "warden") {
+        destination = "/warden";
+      } else if (role === "doctor") {
+        destination = "/doctor";
+      } else if (role === "hostal") {
+        destination = "/hostal";
+      } else if (role === "canteen") {
+        destination = "/canteen-admin";
+      } else if (role === "medical-admin") {
+        destination = "/medical-admin";
+      }
+
+      navigate(destination, { replace: true });
     } catch (error) {
       localStorage.clear();
       setFeedback("Invalid email or password. Please try again.");

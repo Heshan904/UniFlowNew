@@ -1,0 +1,19 @@
+.noticemain{
+    display: flex;
+    flex-direction: row; /* allows items to wrap on smaller screens */
+    justify-content: flex-start; /* keep sidebar anchored to the left */
+    align-items: flex-start;
+    gap: 50px; /* spacing between items */
+    width: 100%;
+    box-sizing: border-box;
+    padding: 2.5rem 3rem;
+}
+.noticecontent{
+    width: 100%; /* responsive width */
+    max-width: 900px; /* optional max width */
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* center children */
+    gap: 30px;
+    margin-bottom: 30px;
+}
