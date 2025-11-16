@@ -6,17 +6,6 @@
   padding: 0;
 }
 
-/* === Auth Page Wrapper === */
-.auth-page {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  padding: 2rem 1rem;
-  background: linear-gradient(135deg, #e4f0ff 0%, #c1d8ff 100%);
-}
-
 /* === Auth Card === */
 .auth-card {
   width: min(620px, 100%);
