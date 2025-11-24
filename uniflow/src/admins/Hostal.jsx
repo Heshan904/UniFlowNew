@@ -1,5 +1,5 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { FiTrash2 } from 'react-icons/fi';
+import React, { useCallback, useEffect, useState } from "react";
+import { FiTrash2, FiEdit } from "react-icons/fi";
 import {
   addDoc,
   collection,
@@ -8,44 +8,43 @@ import {
   getDocs,
   orderBy,
   query,
+  updateDoc,
   serverTimestamp,
-} from 'firebase/firestore';
-import { db } from '../firebase';
-import './hostal.css';
+} from "firebase/firestore";
+import { db } from "../firebase";
+import "./hostal.css";
 
 function Hostal() {
   const [notices, setNotices] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingId, setEditingId] = useState(null);
   const [newNotice, setNewNotice] = useState({
-    title: '',
-    description: '',
+    title: "",
+    description: "",
     date: new Date().toISOString().slice(0, 10),
   });
   const [submitting, setSubmitting] = useState(false);
 
-  const noticesCollection = collection(db, 'hostelNotices');
+  const noticesCollection = collection(db, "hostelNotices");
 
   const loadNotices = useCallback(async () => {
     setLoading(true);
     try {
-      const noticesQuery = query(noticesCollection, orderBy('date', 'desc'));
+      const noticesQuery = query(noticesCollection, orderBy("date", "desc"));
       const snapshot = await getDocs(noticesQuery);
-      const fetched = snapshot.docs.map((docSnapshot) => {
-        const data = docSnapshot.data();
-        return {
-          id: docSnapshot.id,
-          title: data.title,
-          description: data.description ?? data.desc ?? '',
-          date: data.date,
-        };
-      });
+
+      const fetched = snapshot.docs.map((docSnap) => ({
+        id: docSnap.id,
+        ...docSnap.data(),
+      }));
+
       setNotices(fetched);
-      setError('');
+      setError("");
     } catch (err) {
-      setError('Unable to load notices. Please try again later.');
-      console.error('Error loading notices', err);
+      setError("Unable to load notices.");
+      console.log(err);
     } finally {
       setLoading(false);
     }
@@ -55,16 +54,28 @@ function Hostal() {
     loadNotices();
   }, [loadNotices]);
 
+  // Reset modal fields
   const resetModal = () => {
     setNewNotice({
-      title: '',
-      description: '',
+      title: "",
+      description: "",
       date: new Date().toISOString().slice(0, 10),
     });
+    setEditingId(null);
   };
 
   const handleAddNotice = () => {
     resetModal();
+    setIsModalOpen(true);
+  };
+
+  const handleEdit = (notice) => {
+    setEditingId(notice.id);
+    setNewNotice({
+      title: notice.title,
+      description: notice.description,
+      date: notice.date,
+    });
     setIsModalOpen(true);
   };
 
@@ -75,6 +86,7 @@ function Hostal() {
 
   const handleModalClose = () => {
     setIsModalOpen(false);
+    resetModal();
   };
 
   const handleModalSubmit = async (event) => {
@@ -82,24 +94,32 @@ function Hostal() {
     const title = newNotice.title.trim();
     const description = newNotice.description.trim();
 
-    if (!title) {
-      return;
-    }
+    if (!title) return;
 
     setSubmitting(true);
+
     try {
-      await addDoc(noticesCollection, {
-        title,
-        description: description || 'No additional details provided.',
-        date: newNotice.date || new Date().toISOString().slice(0, 10),
-        createdAt: serverTimestamp(),
-      });
-      resetModal();
-      setIsModalOpen(false);
+      if (editingId) {
+        await updateDoc(doc(db, "hostelNotices", editingId), {
+          title,
+          description,
+          date: newNotice.date,
+        });
+      } else {
+
+        await addDoc(noticesCollection, {
+          title,
+          description,
+          date: newNotice.date,
+          createdAt: serverTimestamp(),
+        });
+      }
+
+      handleModalClose();
       loadNotices();
     } catch (err) {
-      console.error('Failed to add notice', err);
-      setError('Could not save notice. Please try again.');
+      console.error("Failed to save notice", err);
+      setError("Could not save notice. Try again.");
     } finally {
       setSubmitting(false);
     }
@@ -110,14 +130,14 @@ function Hostal() {
       await deleteDoc(doc(noticesCollection, id));
       loadNotices();
     } catch (err) {
-      console.error('Failed to delete notice', err);
-      setError('Could not delete the notice. Please try again.');
+      console.error("Delete failed", err);
+      setError("Could not delete notice.");
     }
   };
 
   const handleLogout = () => {
     localStorage.clear();
-    window.location.href = '/login';
+    window.location.href = "/login";
   };
 
   return (
@@ -125,7 +145,7 @@ function Hostal() {
       <div className="hostal-shell">
         <section className="hostal-banner">
           <h1>Hostel Management System</h1>
-          <button type="button" className="hostal-logout" onClick={handleLogout}>
+          <button className="hostal-logout" onClick={handleLogout}>
             Logout
           </button>
         </section>
@@ -133,7 +153,7 @@ function Hostal() {
         <section className="hostal-notice-section">
           <div className="hostal-notice-header">
             <h2>Manage Notices</h2>
-            <button type="button" className="hostal-add-btn" onClick={handleAddNotice}>
+            <button className="hostal-add-btn" onClick={handleAddNotice}>
               + Add Notice
             </button>
           </div>
@@ -150,38 +170,53 @@ function Hostal() {
                     <p>{notice.description}</p>
                     <span className="hostal-notice-date">{notice.date}</span>
                   </div>
-                  <button
-                    type="button"
-                    className="hostal-delete-btn"
-                    aria-label={`Delete notice ${notice.title}`}
-                    onClick={() => handleDelete(notice.id)}
-                  >
-                    <FiTrash2 />
-                  </button>
+
+                  <div className="hostal-notice-actions">
+                    {}
+                    <button
+                      type="button"
+                      className="hostal-edit-btn"
+                      onClick={() => handleEdit(notice)}
+                    >
+                      <FiEdit />
+                    </button>
+
+                    {}
+                    <button
+                      type="button"
+                      className="hostal-delete-btn"
+                      onClick={() => handleDelete(notice.id)}
+                    >
+                      <FiTrash2 />
+                    </button>
+                  </div>
                 </li>
               ))}
+
               {!notices.length && (
-                <li className="hostal-empty-state">No notices yet. Add your first notice.</li>
+                <li className="hostal-empty-state">No notices yet.</li>
               )}
             </ul>
           )}
         </section>
       </div>
+
+      {}
       {isModalOpen && (
-        <div className="hostal-modal" role="dialog" aria-modal="true">
+        <div className="hostal-modal">
           <div className="hostal-modal__backdrop" onClick={handleModalClose} />
+
           <div className="hostal-modal__card">
             <div className="hostal-modal__header">
-              <h3>Add Notice</h3>
+              <h3>{editingId ? "Edit Notice" : "Add Notice"}</h3>
               <button
-                type="button"
                 className="hostal-modal__close"
-                aria-label="Close add notice modal"
                 onClick={handleModalClose}
               >
                 ×
               </button>
             </div>
+
             <form className="hostal-modal__form" onSubmit={handleModalSubmit}>
               <label className="hostal-modal__field">
                 <span>Title</span>
@@ -190,20 +225,20 @@ function Hostal() {
                   name="title"
                   value={newNotice.title}
                   onChange={handleModalChange}
-                  placeholder="Notice title"
                   required
                 />
               </label>
+
               <label className="hostal-modal__field">
                 <span>Description</span>
                 <textarea
                   name="description"
                   value={newNotice.description}
                   onChange={handleModalChange}
-                  placeholder="Provide the notice details..."
                   rows={4}
                 />
               </label>
+
               <label className="hostal-modal__field">
                 <span>Date</span>
                 <input
@@ -211,15 +246,24 @@ function Hostal() {
                   name="date"
                   value={newNotice.date}
                   onChange={handleModalChange}
-                  required
                 />
               </label>
+
               <div className="hostal-modal__actions">
-                <button type="button" className="hostal-modal__secondary" onClick={handleModalClose}>
+                <button
+                  type="button"
+                  className="hostal-modal__secondary"
+                  onClick={handleModalClose}
+                >
                   Cancel
                 </button>
-                <button type="submit" className="hostal-modal__primary" disabled={submitting}>
-                  {submitting ? 'Saving...' : 'Save Notice'}
+
+                <button
+                  type="submit"
+                  className="hostal-modal__primary"
+                  disabled={submitting}
+                >
+                  {submitting ? "Saving..." : editingId ? "Update Notice" : "Save Notice"}
                 </button>
               </div>
             </form>

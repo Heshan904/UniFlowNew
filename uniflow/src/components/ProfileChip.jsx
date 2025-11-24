@@ -1,67 +1,55 @@
 import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
-import { getDisplayName } from "../utils/getDisplayName";
+import { doc, onSnapshot } from "firebase/firestore";
+import { db } from "../firebase";
 import "./profileChip.css";
 import unknownAvatar from "../assets/unknown-avatar.svg";
 
-function readProfilePhoto() {
-  try {
-    return localStorage.getItem("userProfilePhoto") || "";
-  } catch (error) {
-    return "";
-  }
-}
-
-const ProfileChip = ({ displayName: displayNameProp, profilePhoto: profilePhotoProp, onClick }) => {
-  const [displayName, setDisplayName] = useState(displayNameProp || getDisplayName());
-  const [profilePhoto, setProfilePhoto] = useState(profilePhotoProp || readProfilePhoto());
+const ProfileChip = ({ userId, onClick }) => {
+  const [displayName, setDisplayName] = useState("");
+  const [profilePhoto, setProfilePhoto] = useState("");
 
   useEffect(() => {
-    if (displayNameProp) {
-      setDisplayName(displayNameProp);
-    }
-  }, [displayNameProp]);
+    if (!userId) return;
 
-  useEffect(() => {
-    if (profilePhotoProp !== undefined) {
-      setProfilePhoto(profilePhotoProp);
-    }
-  }, [profilePhotoProp]);
-
-  useEffect(() => {
-    const handleStorage = (event) => {
-      if (event.key === "userFullName") {
-        setDisplayName(getDisplayName());
+    const docRef = doc(db, "userProfiles", userId);
+    const unsubscribe = onSnapshot(docRef, (docSnap) => {
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        setDisplayName(data.fullName || "");
+        setProfilePhoto(data.profilePhoto || "");
       }
-      if (event.key === "userProfilePhoto") {
-        setProfilePhoto(readProfilePhoto());
-      }
-    };
+    });
 
-    window.addEventListener("storage", handleStorage);
-    return () => window.removeEventListener("storage", handleStorage);
-  }, []);
+    return () => unsubscribe();
+  }, [userId]);
 
   const effectivePhoto =
-    typeof profilePhoto === "string" && profilePhoto.trim().length > 0 ? profilePhoto : unknownAvatar;
+    typeof profilePhoto === "string" && profilePhoto.trim().length > 0
+      ? profilePhoto
+      : unknownAvatar;
+
+  const effectiveName = displayName || "Unknown User";
 
   return (
-    <button type="button" className="profile-chip" onClick={onClick} aria-label="Open profile settings">
+    <button
+      type="button"
+      className="profile-chip"
+      onClick={onClick}
+      aria-label="Open profile settings"
+    >
       <img src={effectivePhoto} alt="Profile" />
-      <span>{displayName}</span>
+      <span>{effectiveName}</span>
     </button>
   );
 };
 
 ProfileChip.propTypes = {
-  displayName: PropTypes.string,
-  profilePhoto: PropTypes.string,
+  userId: PropTypes.string.isRequired,
   onClick: PropTypes.func,
 };
 
 ProfileChip.defaultProps = {
-  displayName: undefined,
-  profilePhoto: undefined,
   onClick: undefined,
 };
 

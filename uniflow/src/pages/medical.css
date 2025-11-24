@@ -1,20 +1,171 @@
-.medicalmain{
-    display: flex;
-    flex-direction: row; /* allows items to wrap on smaller screens */
-    justify-content: flex-start; /* keep sidebar anchored to the left */
-    align-items: flex-start;
-    gap: 50px; /* spacing between items */
-    width: 100%;
-    box-sizing: border-box;
-    padding: 2.5rem 3rem;
+.medicalmain {
+  display: flex;
+  flex-direction: row;
+  gap: 2rem;
+  padding: 1rem;
 }
 
-.medicalcontent{
-    width: 100%; /* responsive width */
-    max-width: 900px; /* optional max width */
-    display: flex;
+.medicalcontent {
+  display: flex;
+  flex-direction: column;
+  margin-top: 3rem;
+  gap: 2rem;
+  flex: 1;
+}
+
+/* Emergency card */
+.medical-card {
+  position: relative;
+  padding: 1rem;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.medical-card__numbers span {
+  display: inline-block;
+  margin-right: 0.6rem;
+  margin-bottom: 0.4rem;
+  padding: 0.25rem 0.6rem;
+  border-radius: 6px;
+  background: #f3f4f6;
+}
+
+.medical-card__actions button {
+  margin-left: 8px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 1.1rem;
+}
+
+/* Modal */
+.medical-modal {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  z-index: 50;
+}
+
+.medical-modal__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+}
+
+.medical-modal__card {
+  position: relative;
+  width: 100%;
+  max-width: 520px;
+  background: #fff;
+  padding: 1.2rem;
+  border-radius: 8px;
+  z-index: 10;
+}
+
+/* Availability toggle */
+.availability-toggle {
+  width: 56px;
+  height: 30px;
+  border-radius: 999px;
+  background: #e5e7eb;
+  border: none;
+  position: relative;
+  cursor: pointer;
+}
+
+.availability-toggle span {
+  display: block;
+  width: 22px;
+  height: 22px;
+  background: #fff;
+  border-radius: 50%;
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  transition: transform 0.18s ease;
+}
+
+.availability-toggle.is-on {
+  background: #34d399;
+}
+
+.availability-toggle.is-on span {
+  transform: translateX(26px);
+}
+
+/* Student availability display */
+.availability-display {
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  display: inline-block;
+}
+
+.availability-display.is-on {
+  background: #e6ffef;
+  color: #065f46;
+}
+
+.availability-display.is-off {
+  background: #fff0f0;
+  color: #9b1c1c;
+}
+
+/* Responsive media queries */
+@media (max-width: 1024px) {
+  .medicalmain {
     flex-direction: column;
-    align-items: center; /* center children */
-    gap: 30px;
-    margin-bottom: 30px;
+    margin: 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .medicalcontent {
+    margin-top: 2rem;
+  }
+
+  .medical-card {
+    padding: 0.8rem;
+  }
+
+  .medical-card__numbers span {
+    margin-right: 0.4rem;
+    padding: 0.2rem 0.4rem;
+  }
+
+  .availability-toggle {
+    width: 50px;
+    height: 26px;
+  }
+
+  .availability-toggle span {
+    width: 20px;
+    height: 20px;
+    top: 3px;
+    left: 3px;
+  }
+
+  .availability-toggle.is-on span {
+    transform: translateX(24px);
+  }
+}
+
+@media (max-width: 480px) {
+  .medical-card {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .medical-card__actions {
+    margin-top: 0.5rem;
+  }
+
+  .availability-display {
+    font-size: 0.9rem;
+    padding: 0.3rem 0.6rem;
+  }
 }

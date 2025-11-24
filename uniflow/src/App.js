@@ -3,7 +3,6 @@ import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import AuthCard from './components/AuthCard';
 import DashBord from './pages/DashBord';
 import DoctorMedicalPage from './pages/DoctorMedicalPage';
-import HostelNoticePage from './pages/HostelNoticePage';
 import NoticePage from './pages/NoticePage';
 import Canteen from './pages/Canteen';
 import Medical from './pages/Medical';
@@ -27,21 +26,11 @@ const getStoredValue = (key) => {
 const isAuthenticated = () => getStoredValue('isAuthenticated') === 'true';
 const getRole = () => getStoredValue('role');
 const getDefaultRoute = (role) => {
-  if (role === 'warden') {
-    return '/warden';
-  }
-  if (role === 'doctor') {
-    return '/doctor';
-  }
-  if (role === 'hostal') {
-    return '/hostal';
-  }
-  if (role === 'canteen') {
-    return '/canteen-admin';
-  }
-  if (role === 'medical-admin') {
-    return '/medical-admin';
-  }
+  if (role === 'warden') return '/warden';
+  if (role === 'doctor') return '/doctor';
+  if (role === 'hostal') return '/hostal';
+  if (role === 'canteen') return '/canteen-admin';
+  if (role === 'medical-admin') return '/medical-admin';
   return '/dashboard';
 };
 
@@ -51,9 +40,7 @@ function App() {
   const [role, setRole] = useState(() => getRole());
 
   useEffect(() => {
-    if (typeof window === 'undefined') {
-      return undefined;
-    }
+    if (typeof window === 'undefined') return undefined;
 
     const handleStorage = () => {
       setAuth(isAuthenticated());
@@ -92,61 +79,40 @@ function App() {
 
   return (
     <Routes>
-      <Route
-        path="/login"
-        element={<Navigate to={defaultRoute} replace />}
-      />
+      <Route path="/login" element={<Navigate to={defaultRoute} replace />} />
       <Route path="/" element={<Navigate to={defaultRoute} replace />} />
       <Route path="/dashboard" element={<DashBord />} />
       <Route path="/notice" element={<NoticePage />} />
       <Route path="/canteen" element={<Canteen />} />
       <Route path="/medical" element={<Medical />} />
       <Route path="/student" element={<StudentHostelView />} />
-      <Route path="/notices" element={<HostelNoticePage />} />
+      <Route path="/notices" element={<StudentHostelView />} />
       <Route
         path="/warden"
         element={
-          role === 'warden' ? (
-            <HostelNoticePage />
-          ) : (
-            <Navigate to={defaultRoute} replace />
-          )
+          role === 'warden' ? <StudentHostelView /> : <Navigate to={defaultRoute} replace />
         }
       />
       <Route
         path="/doctor"
         element={
-          role === 'doctor' ? (
-            <DoctorMedicalPage />
-          ) : (
-            <Navigate to={defaultRoute} replace />
-          )
+          role === 'doctor' ? <DoctorMedicalPage /> : <Navigate to={defaultRoute} replace />
         }
       />
       <Route
         path="/hostal"
-        element={
-          role === 'hostal' ? <Hostal /> : <Navigate to={defaultRoute} replace />
-        }
+        element={role === 'hostal' ? <Hostal /> : <Navigate to={defaultRoute} replace />}
       />
       <Route
         path="/canteen-admin"
         element={
-          role === 'canteen' ? (
-            <AdminCanteen />
-          ) : (
-            <Navigate to={defaultRoute} replace />
-          )
+          role === 'canteen' ? <AdminCanteen /> : <Navigate to={defaultRoute} replace />
         }
       />
       <Route
         path="/medical-admin"
         element={
-          role === 'medical-admin' ? (
-            <AdminMedical />
-          ) : (
-            <Navigate to={defaultRoute} replace />
-          )
+          role === 'medical-admin' ? <AdminMedical /> : <Navigate to={defaultRoute} replace />
         }
       />
       <Route path="/qr" element={<Qr />} />

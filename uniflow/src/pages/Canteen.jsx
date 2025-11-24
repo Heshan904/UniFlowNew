@@ -39,19 +39,33 @@ useEffect(() => {
     <div className="canteenmain">
         <SideBar/>
         <div className="canteencontent">
-
           {data.map((item) => (
-            <div key={item.id} className="canteen-item-card">
-              <h3>{item.name}</h3>  
-              <p>Category: {item.category}</p>
-              <p>Description: {item.desc}</p>
-              <p>Price: ${item.price}</p>
-              <p>Available: {item.available ? "Yes" : "No"}</p>
-              <p>Stock: {item.stock}</p>
+            <div key={item.id} className="canteen-card">
+              
+              {/* Category Badge */}
+              <span className="canteen-badge">{item.category}</span>
+
+              {/* Title */}
+              <h3 className="canteen-title">{item.name}</h3>
+
+              {/* Description */}
+              <p className="canteen-desc">{item.desc}</p>
+
+              {/* Price */}
+              <div className="canteen-price">Rs. {item.price}</div>
+
+              {/* Availability */}
+              <div className={`canteen-status ${item.available ? "on" : "off"}`}>
+                {item.available ? "Available" : "Not Available"}
+              </div>
+
+              {/* Stock */}
+              <div className="canteen-stock">Stock: {item.stock}</div>
+
             </div>
           ))}
-
         </div>
+
     </div>
     </>
   );

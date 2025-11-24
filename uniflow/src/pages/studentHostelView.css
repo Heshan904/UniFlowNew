@@ -60,6 +60,56 @@
   font-size: 1rem;
   color: #64748b;
 }
+.student-hostel__content {
+  padding: 20px;
+  flex: 1;
+  background-color: #f5f7fa;
+}
+
+.notice-cards-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.notice-card {
+  background: white;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.notice-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.notice-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.notice-card h3 {
+  margin: 0;
+  font-size: 1.2rem;
+  color: #333;
+}
+
+.notice-date {
+  font-size: 0.85rem;
+  color: #888;
+}
+
+.notice-card-description {
+  font-size: 1rem;
+  color: #555;
+  line-height: 1.4;
+}
+
 
 @media (max-width: 1024px) {
   .student-hostel {
