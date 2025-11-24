@@ -1,6 +1,8 @@
 import React, { useMemo, useState } from 'react';
 import { FiEdit2, FiTrash2, FiEye } from 'react-icons/fi';
 import './canteen.css';
+import { db } from '../firebase';
+import { collection, addDoc } from 'firebase/firestore';
 
 const initialItems = [
   {
@@ -106,25 +108,37 @@ function Canteen() {
     }));
   };
 
+  const saveData = () => {
+    
+  };
+
   const handleModalSubmit = (event) => {
     event.preventDefault();
     if (!newItem.name.trim() || !newItem.price || !newItem.stock) {
       return;
     }
-
-    setItems((prev) => [
-      {
-        id: Date.now(),
+    console.log('New Item Added:', {id: Date.now(),
         name: newItem.name.trim(),
         category: newItem.category.trim(),
         desc: newItem.desc.trim(),
         price: Number(newItem.price),
         available: newItem.available,
-        stock: Number(newItem.stock),
-      },
-      ...prev,
-    ]);
+        stock: Number(newItem.stock),});
+    try{
+    const docRef = addDoc(collection(db, "canteenItems"), {
+      name: newItem.name.trim(),
+      category: newItem.category.trim(),
+      desc: newItem.desc.trim(),
+      price: Number(newItem.price),
+      available: newItem.available,
+      stock: Number(newItem.stock),
+    });
+    console.log("Document written with ID: ", docRef.id);
     setIsModalOpen(false);
+    }catch (e) {
+      console.error("Error adding document: ", e);
+    }
+  
   };
 
   return (
